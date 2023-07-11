@@ -1,6 +1,17 @@
+/////////////////////////////////////
+// Deez Nuts are licensed on GPLv3 //
+//  Don't steal my shit. Have fun. //
+//                     - Cherry <3 //
+/////////////////////////////////////
 const std = @import("std");
+const http = std.http;
+const heap = std.heap;
 
 pub fn main() !void {
+    var arena = heap.ArenaAllocator.init(heap.page_allocator);
+    const alloc = arena.allocator();
+    _ = alloc;
+
     // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
     std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
 
