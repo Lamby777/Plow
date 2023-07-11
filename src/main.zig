@@ -4,7 +4,7 @@
 //                     - Cherry <3 //
 /////////////////////////////////////
 const std = @import("std");
-const http = std.http;
+const hzzp = @import("hzzp");
 const heap = std.heap;
 const mem = std.mem;
 
@@ -12,7 +12,7 @@ pub fn main() !void {
     var arena = heap.ArenaAllocator.init(heap.page_allocator);
     const alloc = arena.allocator();
 
-    var res = try rq_get(alloc);
+    var res = try rq_get(alloc, "https://sparklet.org/");
     defer alloc.free(res);
     std.debug.print("{s}", .{res});
 
@@ -32,12 +32,12 @@ pub fn main() !void {
 }
 
 // https://zig.news/nameless/coming-soon-to-a-zig-near-you-http-client-5b81
-pub fn rq_get(alloc: mem.Allocator) ![]u8 {
+pub fn rq_get(alloc: mem.Allocator, url: []const u8) ![]u8 {
     var client = std.http.Client{
         .allocator = alloc,
     };
 
-    const uri = std.Uri.parse("https://example.com") catch unreachable;
+    const uri = std.Uri.parse(url) catch unreachable;
     var headers = std.http.Headers{ .allocator = alloc };
     defer headers.deinit();
 
