@@ -10,7 +10,22 @@ const heap = std.heap;
 pub fn main() !void {
     var arena = heap.ArenaAllocator.init(heap.page_allocator);
     const alloc = arena.allocator();
-    _ = alloc;
+
+    var client = http.Client{ .allocator = alloc };
+
+    const uri = try std.Uri.parse("https://sparklet.org/");
+
+    var headers = http.Headers{ .allocator = alloc };
+    defer headers.deinit();
+
+    try headers.append("accept", "*/*");
+
+    var req = try client.request(.GET, uri, headers, .{});
+    defer req.deinit();
+
+    const body = undefined;
+    _ = try req.read(body);
+    std.debug.print("{s}", .{body});
 
     // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
     std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
@@ -26,6 +41,10 @@ pub fn main() !void {
 
     try bw.flush(); // don't forget to flush!
 }
+
+// pub fn rq_get() []u8 {
+//     return;
+// }
 
 test "simple test" {
     var list = std.ArrayList(i32).init(std.testing.allocator);
