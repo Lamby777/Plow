@@ -1,8 +1,5 @@
 const std = @import("std");
-const heap = std.heap;
 const mem = std.mem;
-const ArrayList = std.ArrayList;
-
 const PLUGIN_DL_LIMIT = 1_000_000;
 
 // https://zig.news/nameless/coming-soon-to-a-zig-near-you-http-client-5b81
