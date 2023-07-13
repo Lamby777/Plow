@@ -3,6 +3,8 @@ const heap = std.heap;
 const mem = std.mem;
 const ArrayList = std.ArrayList;
 
+const PLUGIN_DL_LIMIT = 1_000_000;
+
 // https://zig.news/nameless/coming-soon-to-a-zig-near-you-http-client-5b81
 pub fn rq_get(alloc: mem.Allocator, url: []const u8) ![]u8 {
     var client = std.http.Client{
@@ -25,7 +27,7 @@ pub fn rq_get(alloc: mem.Allocator, url: []const u8) ![]u8 {
 
     // wait for the server to send use a response
     try req.wait();
-    const body = req.reader().readAllAlloc(alloc, 8192) catch unreachable;
+    const body = req.reader().readAllAlloc(alloc, PLUGIN_DL_LIMIT) catch unreachable;
 
     return body;
 }
