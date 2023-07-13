@@ -10,6 +10,7 @@ pub fn rq_get(alloc: mem.Allocator, url: []const u8) ![]u8 {
     var client = std.http.Client{
         .allocator = alloc,
     };
+    defer client.deinit();
 
     const uri = std.Uri.parse(url) catch unreachable;
     var headers = std.http.Headers{ .allocator = alloc };
