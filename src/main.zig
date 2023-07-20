@@ -22,8 +22,12 @@ pub fn main() !void {
 
     const alloc = gpa.allocator();
 
-    const args = lyte.parse(alloc);
-    std.debug.print("{s}", .{args});
+    const args = try std.process.argsAlloc(alloc);
+    defer std.process.argsFree(alloc, args);
+
+    for (args) |arg| {
+        std.debug.print("{s}\n", .{arg});
+    }
 
     log.info("Getting package...", .{});
     var res = try rq_get(alloc, "https://sparklet.org/");

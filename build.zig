@@ -1,5 +1,4 @@
 const std = @import("std");
-const deps = @import("./deps.zig");
 
 // Although this function looks imperative, note that its job is to
 // declaratively construct a build graph that will be executed by an external
@@ -25,7 +24,9 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    deps.addAllTo(exe);
+    // exe.addModule("lyte", b.createModule(.{
+    //     .source_file = .{ .path = "lyte/src/main.zig" },
+    // }));
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default

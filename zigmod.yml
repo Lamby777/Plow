@@ -1,7 +1,0 @@
-id: ojts0f0a5e359047pki9yai9y8g9yvwam8o9v7dp1gkbrim0
-name: Plow
-license: GPL-3.0+
-description: MC plugin manager
-root_dependencies:
-  - src: git https://github.com/Lamby777/lyte
-
