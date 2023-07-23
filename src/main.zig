@@ -4,12 +4,13 @@
 //                     - Cherry <3 //
 /////////////////////////////////////
 const std = @import("std");
-const lyte = @import("lyte");
 const util = @import("util.zig");
 const rq_get = util.rq_get;
 const heap = std.heap;
 const mem = std.mem;
 const log = std.log;
+
+const Subcommand = enum { install };
 
 pub fn main() !void {
     var gpa = heap.GeneralPurposeAllocator(.{}){};
@@ -25,12 +26,24 @@ pub fn main() !void {
     const args = try std.process.argsAlloc(alloc);
     defer std.process.argsFree(alloc, args);
 
-    for (args) |arg| {
-        std.debug.print("{s}\n", .{arg});
+    if (args.len <= 1) {
+        showHelp();
+        return;
     }
+
+    const subcommand = std.meta.stringToEnum(Subcommand, args[1]) orelse {
+        std.debug.print("Invalid subcommand {s}\n", .{args[1]});
+        showHelp();
+        return;
+    };
+    _ = subcommand;
 
     log.info("Getting package...", .{});
     var res = try rq_get(alloc, "https://sparklet.org/");
     defer alloc.free(res);
     log.info("Installing package...", .{});
+}
+
+fn showHelp() void {
+    std.debug.print("<help text>\n", .{});
 }
