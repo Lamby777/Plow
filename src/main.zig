@@ -9,6 +9,8 @@ const rq_get = util.rq_get;
 const heap = std.heap;
 const mem = std.mem;
 const log = std.log;
+const fmt = std.fmt;
+const format = fmt.format;
 
 const Subcommand = enum { install };
 
@@ -21,10 +23,10 @@ pub fn main() !void {
         }
     }
 
-    const alloc = gpa.allocator();
+    const ally = gpa.allocator();
 
-    const _args = try std.process.argsAlloc(alloc);
-    defer std.process.argsFree(alloc, _args);
+    const _args = try std.process.argsAlloc(ally);
+    defer std.process.argsFree(ally, _args);
 
     if (_args.len <= 1) {
         showHelp();
@@ -36,14 +38,39 @@ pub fn main() !void {
         showHelp();
         return;
     };
-    _ = subcommand;
 
     const args: [][:0]u8 = _args[2..];
-    _ = args;
 
+    switch (subcommand) {
+        .install => {
+            assertArgLen(args.len, 1, null);
+            try install(ally);
+        },
+    }
+}
+
+fn assertArgLen(len: usize, comptime min: ?usize, comptime max: ?usize) void {
+    // more short-circuit evaluation clownery <3
+    const limMin = (min != null);
+    const limMax = (max != null);
+    const under = limMin and (len < min.?);
+    const over = limMax and (len > max.?);
+
+    if (!(over or under)) {
+        return; // congrats
+    }
+
+    // display-formatted expected range
+    const expectedRange = fmt.comptimePrint("{?}-{?}", .{ min, max });
+
+    const complaint = if (over) "Too many" else "Not enough";
+    std.debug.print("{s} ({}) arguments given! Expected {s}\n\n", .{ complaint, len, expectedRange });
+}
+
+fn install(ally: mem.Allocator) !void {
     log.info("Getting package...", .{});
-    var res = try rq_get(alloc, "https://sparklet.org/");
-    defer alloc.free(res);
+    var res = try rq_get(ally, "https://sparklet.org/");
+    defer ally.free(res);
     log.info("Installing package...", .{});
 }
 
