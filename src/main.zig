@@ -62,17 +62,10 @@ fn assertArgLen(len: usize, comptime min: ?usize, comptime max: ?usize) void {
 
     // display-formatted expected range
     const expectedRange = makeRangeStr: {
-        if (limMin and limMax) {
-            break :makeRangeStr fmt.comptimePrint("{?}-{?}", .{ min, max });
-        }
+        const minD = if (limMin) fmt.comptimePrint("{?}", .{min}) else "";
+        const maxD = if (limMax) fmt.comptimePrint("{?}", .{max}) else "";
 
-        if (limMin) {
-            break :makeRangeStr fmt.comptimePrint("{?}...", .{min});
-        }
-
-        if (limMax) {
-            break :makeRangeStr fmt.comptimePrint("...{?}", .{max});
-        }
+        break :makeRangeStr fmt.comptimePrint("{s}...{s}", .{ minD, maxD });
     };
 
     const complaint = if (over) "Too many" else "Not enough";
