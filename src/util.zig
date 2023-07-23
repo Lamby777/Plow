@@ -1,5 +1,7 @@
 const std = @import("std");
 const mem = std.mem;
+const fmt = std.fmt;
+
 const PLUGIN_DL_LIMIT = 1_000_000;
 
 // https://zig.news/nameless/coming-soon-to-a-zig-near-you-http-client-5b81
@@ -28,4 +30,31 @@ pub fn rq_get(alloc: mem.Allocator, url: []const u8) ![]u8 {
     const body = req.reader().readAllAlloc(alloc, PLUGIN_DL_LIMIT) catch unreachable;
 
     return body;
+}
+
+pub fn assertArgLen(len: usize, comptime min: ?usize, comptime max: ?usize) void {
+    // more short-circuit evaluation clownery <3
+    const limMin = (min != null);
+    const limMax = (max != null);
+    const under = limMin and (len < min.?);
+    const over = limMax and (len > max.?);
+
+    if (!(over or under)) {
+        return; // congrats
+    }
+
+    // display-formatted expected range
+    const expectedRange = makeRangeStr: {
+        const minD = if (limMin) fmt.comptimePrint("{?}", .{min}) else "";
+        const maxD = if (limMax) fmt.comptimePrint("{?}", .{max}) else "";
+
+        break :makeRangeStr fmt.comptimePrint("{s}...{s}", .{ minD, maxD });
+    };
+
+    const complaint = if (over) "Too many" else "Not enough";
+    std.debug.print("{s} arguments ({}) given! Expected {s}\n\n", .{ complaint, len, expectedRange });
+}
+
+pub fn showHelp() void {
+    std.debug.print("<help text>\n", .{});
 }

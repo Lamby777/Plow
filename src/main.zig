@@ -10,7 +10,6 @@ const heap = std.heap;
 const mem = std.mem;
 const log = std.log;
 const fmt = std.fmt;
-const format = fmt.format;
 
 const Subcommand = enum { install };
 
@@ -29,13 +28,13 @@ pub fn main() !void {
     defer std.process.argsFree(ally, _args);
 
     if (_args.len <= 1) {
-        showHelp();
+        util.showHelp();
         return;
     }
 
     const subcommand = std.meta.stringToEnum(Subcommand, _args[1]) orelse {
         std.debug.print("Invalid subcommand {s}\n", .{_args[1]});
-        showHelp();
+        util.showHelp();
         return;
     };
 
@@ -43,33 +42,10 @@ pub fn main() !void {
 
     switch (subcommand) {
         .install => {
-            assertArgLen(args.len, 1, null);
+            util.assertArgLen(args.len, 1, null);
             try install(ally);
         },
     }
-}
-
-fn assertArgLen(len: usize, comptime min: ?usize, comptime max: ?usize) void {
-    // more short-circuit evaluation clownery <3
-    const limMin = (min != null);
-    const limMax = (max != null);
-    const under = limMin and (len < min.?);
-    const over = limMax and (len > max.?);
-
-    if (!(over or under)) {
-        return; // congrats
-    }
-
-    // display-formatted expected range
-    const expectedRange = makeRangeStr: {
-        const minD = if (limMin) fmt.comptimePrint("{?}", .{min}) else "";
-        const maxD = if (limMax) fmt.comptimePrint("{?}", .{max}) else "";
-
-        break :makeRangeStr fmt.comptimePrint("{s}...{s}", .{ minD, maxD });
-    };
-
-    const complaint = if (over) "Too many" else "Not enough";
-    std.debug.print("{s} arguments ({}) given! Expected {s}\n\n", .{ complaint, len, expectedRange });
 }
 
 fn install(ally: mem.Allocator) !void {
@@ -77,8 +53,4 @@ fn install(ally: mem.Allocator) !void {
     var res = try rq_get(ally, "https://sparklet.org/");
     defer ally.free(res);
     log.info("Installing package...", .{});
-}
-
-fn showHelp() void {
-    std.debug.print("<help text>\n", .{});
 }
