@@ -23,20 +23,23 @@ pub fn main() !void {
 
     const alloc = gpa.allocator();
 
-    const args = try std.process.argsAlloc(alloc);
-    defer std.process.argsFree(alloc, args);
+    const _args = try std.process.argsAlloc(alloc);
+    defer std.process.argsFree(alloc, _args);
 
-    if (args.len <= 1) {
+    if (_args.len <= 1) {
         showHelp();
         return;
     }
 
-    const subcommand = std.meta.stringToEnum(Subcommand, args[1]) orelse {
-        std.debug.print("Invalid subcommand {s}\n", .{args[1]});
+    const subcommand = std.meta.stringToEnum(Subcommand, _args[1]) orelse {
+        std.debug.print("Invalid subcommand {s}\n", .{_args[1]});
         showHelp();
         return;
     };
     _ = subcommand;
+
+    const args: [][:0]u8 = _args[2..];
+    _ = args;
 
     log.info("Getting package...", .{});
     var res = try rq_get(alloc, "https://sparklet.org/");
