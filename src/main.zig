@@ -61,10 +61,22 @@ fn assertArgLen(len: usize, comptime min: ?usize, comptime max: ?usize) void {
     }
 
     // display-formatted expected range
-    const expectedRange = fmt.comptimePrint("{?}-{?}", .{ min, max });
+    const expectedRange = makeRangeStr: {
+        if (limMin and limMax) {
+            break :makeRangeStr fmt.comptimePrint("{?}-{?}", .{ min, max });
+        }
+
+        if (limMin) {
+            break :makeRangeStr fmt.comptimePrint("{?}...", .{min});
+        }
+
+        if (limMax) {
+            break :makeRangeStr fmt.comptimePrint("...{?}", .{max});
+        }
+    };
 
     const complaint = if (over) "Too many" else "Not enough";
-    std.debug.print("{s} ({}) arguments given! Expected {s}\n\n", .{ complaint, len, expectedRange });
+    std.debug.print("{s} arguments ({}) given! Expected {s}\n\n", .{ complaint, len, expectedRange });
 }
 
 fn install(ally: mem.Allocator) !void {
