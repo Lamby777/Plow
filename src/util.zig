@@ -53,6 +53,7 @@ pub fn assertArgLen(len: usize, comptime min: ?usize, comptime max: ?usize) void
 
     const complaint = if (over) "Too many" else "Not enough";
     std.debug.print("{s} arguments ({}) given! Expected {s}\n\n", .{ complaint, len, expectedRange });
+    std.os.exit(2);
 }
 
 pub fn showHelp() void {
