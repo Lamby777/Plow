@@ -1,4 +1,5 @@
 const std = @import("std");
+const defs = @import("defs.zig");
 const mem = std.mem;
 const fmt = std.fmt;
 
@@ -58,4 +59,15 @@ pub fn assertArgLen(len: usize, comptime min: ?usize, comptime max: ?usize) void
 
 pub fn showHelp() void {
     std.debug.print("<help text>\n", .{});
+}
+
+pub fn parseSubcommand(cmdStr: []const u8) ?defs.RunModes {
+    const cmd =
+        std.meta.stringToEnum(defs.Cmds, cmdStr) orelse
+        return null;
+
+    // map commands (and aliases) to run modes
+    return switch (cmd) {
+        .install, .i => .Install,
+    };
 }

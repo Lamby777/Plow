@@ -5,13 +5,12 @@
 /////////////////////////////////////
 const std = @import("std");
 const util = @import("util.zig");
+const defs = @import("defs.zig");
 const rq_get = util.rq_get;
 const heap = std.heap;
 const mem = std.mem;
 const log = std.log;
 const fmt = std.fmt;
-
-const Subcommand = enum { install };
 
 pub fn main() !void {
     var gpa = heap.GeneralPurposeAllocator(.{}){};
@@ -32,7 +31,7 @@ pub fn main() !void {
         return;
     }
 
-    const subcommand = std.meta.stringToEnum(Subcommand, _args[1]) orelse {
+    const subcommand = util.parseSubcommand(_args[1]) orelse {
         std.debug.print("Invalid subcommand {s}\n", .{_args[1]});
         util.showHelp();
         return;
@@ -41,7 +40,7 @@ pub fn main() !void {
     const args: [][:0]u8 = _args[2..];
 
     switch (subcommand) {
-        .install => {
+        .Install => {
             util.assertArgLen(args.len, 1, null);
             try install(ally);
         },
