@@ -62,8 +62,8 @@ pub fn assertArgLen(len: usize, comptime range: Range) void {
     }
 
     // display-formatted expected range
-    const expectedRange = fmt.comptimePrint("{s} to {s}", .{
-        fmt.comptimePrint("{}", .{range.min}),
+    const expectedRange = fmt.comptimePrint("{} to {s}", .{
+        range.min,
         if (range.max) |v| fmt.comptimePrint("{}", .{v}) else "...",
     });
 
