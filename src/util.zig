@@ -37,24 +37,35 @@ pub fn rq_get(alloc: mem.Allocator, url: []const u8) ![]const u8 {
     return req.reader().readAllAlloc(alloc, PLUGIN_DL_LIMIT) catch unreachable;
 }
 
-pub fn assertArgLen(len: usize, comptime min: ?usize, comptime max: ?usize) void {
+pub const Range = struct {
+    min: usize = 0,
+    max: ?usize = null,
+};
+
+pub fn assertArgMinN(len: usize, comptime min: usize) void {
+    // Really, man? https://github.com/ziglang/zig/issues/484
+    assertArgLen(len, Range{ .min = min });
+}
+
+pub fn assertArgLenN(len: usize, comptime min: usize, comptime max: ?usize) void {
+    // ughhhhhhhh cmon andrew, let me use default values already!
+    assertArgLen(len, Range{ .min = min, .max = max });
+}
+
+pub fn assertArgLen(len: usize, comptime range: Range) void {
     // more short-circuit evaluation clownery <3
-    const limMin = (min != null);
-    const limMax = (max != null);
-    const under = limMin and (len < min.?);
-    const over = limMax and (len > max.?);
+    const under = len < range.min;
+    const over = (range.max != null) and (len > range.max.?);
 
     if (!(over or under)) {
         return; // congrats
     }
 
     // display-formatted expected range
-    const expectedRange = makeRangeStr: {
-        const minD = if (limMin) fmt.comptimePrint("{?}", .{min}) else "";
-        const maxD = if (limMax) fmt.comptimePrint("{?}", .{max}) else "";
-
-        break :makeRangeStr fmt.comptimePrint("{s}...{s}", .{ minD, maxD });
-    };
+    const expectedRange = fmt.comptimePrint("{s} to {s}", .{
+        fmt.comptimePrint("{}", .{range.min}),
+        if (range.max) |v| fmt.comptimePrint("{}", .{v}) else "...",
+    });
 
     const complaint = if (over) "Too many" else "Not enough";
     std.debug.print("{s} arguments ({}) given! Expected {s}\n\n", .{ complaint, len, expectedRange });

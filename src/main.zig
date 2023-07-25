@@ -41,7 +41,7 @@ pub fn main() !void {
 
     switch (subcommand) {
         .Install => {
-            util.assertArgLen(args.len, 1, null);
+            util.assertArgMinN(args.len, 1);
 
             for (args) |target| {
                 try install(ally, target);
