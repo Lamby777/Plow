@@ -5,6 +5,10 @@ const fmt = std.fmt;
 
 const PLUGIN_DL_LIMIT = 1_000_000;
 
+pub fn resolveTarget(target: []const u8) []const u8 {
+    return target;
+}
+
 // https://zig.news/nameless/coming-soon-to-a-zig-near-you-http-client-5b81
 pub fn rq_get(alloc: mem.Allocator, url: []const u8) ![]u8 {
     var client = std.http.Client{
@@ -28,6 +32,8 @@ pub fn rq_get(alloc: mem.Allocator, url: []const u8) ![]u8 {
 
     // wait for the server to send use a response
     try req.wait();
+
+    // TODO just return this?
     const body = req.reader().readAllAlloc(alloc, PLUGIN_DL_LIMIT) catch unreachable;
 
     return body;

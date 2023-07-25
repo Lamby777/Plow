@@ -42,14 +42,17 @@ pub fn main() !void {
     switch (subcommand) {
         .Install => {
             util.assertArgLen(args.len, 1, null);
-            try install(ally);
+            try install(ally, args[0]);
         },
     }
 }
 
-fn install(ally: mem.Allocator) !void {
+fn install(ally: mem.Allocator, target: []const u8) !void {
+    log.info("Resolving target `{s}`...", .{target});
+    const url = util.resolveTarget(target);
+
     log.info("Getting package...", .{});
-    var res = try rq_get(ally, "https://sparklet.org/");
+    const res = try rq_get(ally, url);
     defer ally.free(res);
     log.info("Installing package...", .{});
 }
