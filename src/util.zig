@@ -10,7 +10,7 @@ pub fn resolveTarget(target: []const u8) []const u8 {
 }
 
 // https://zig.news/nameless/coming-soon-to-a-zig-near-you-http-client-5b81
-pub fn rq_get(alloc: mem.Allocator, url: []const u8) ![]u8 {
+pub fn rq_get(alloc: mem.Allocator, url: []const u8) ![]const u8 {
     var client = std.http.Client{
         .allocator = alloc,
     };
@@ -33,10 +33,8 @@ pub fn rq_get(alloc: mem.Allocator, url: []const u8) ![]u8 {
     // wait for the server to send use a response
     try req.wait();
 
-    // TODO just return this?
-    const body = req.reader().readAllAlloc(alloc, PLUGIN_DL_LIMIT) catch unreachable;
-
-    return body;
+    // TODO why do we need a download limit? should be optional
+    return req.reader().readAllAlloc(alloc, PLUGIN_DL_LIMIT) catch unreachable;
 }
 
 pub fn assertArgLen(len: usize, comptime min: ?usize, comptime max: ?usize) void {

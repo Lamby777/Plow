@@ -42,7 +42,10 @@ pub fn main() !void {
     switch (subcommand) {
         .Install => {
             util.assertArgLen(args.len, 1, null);
-            try install(ally, args[0]);
+
+            for (args) |target| {
+                try install(ally, target);
+            }
         },
     }
 }
