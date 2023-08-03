@@ -9,18 +9,25 @@ pub fn resolveTarget(target: []const u8) []const u8 {
     return target;
 }
 
+// get with default headers
+pub fn httpGet(ally: mem.Allocator, url: []const u8) ![]const u8 {
+    var headers = std.http.Headers{ .allocator = ally };
+    defer headers.deinit();
+
+    try headers.append("accept", "*/*"); // tell the server we'll accept anything
+
+    return httpGetH(ally, url, headers);
+}
+
 // https://zig.news/nameless/coming-soon-to-a-zig-near-you-http-client-5b81
-pub fn rq_get(alloc: mem.Allocator, url: []const u8) ![]const u8 {
+pub fn httpGetH(ally: mem.Allocator, url: []const u8, headers: std.http.Headers) ![]const u8 {
     var client = std.http.Client{
-        .allocator = alloc,
+        .allocator = ally,
     };
     defer client.deinit();
 
     const uri = std.Uri.parse(url) catch unreachable;
-    var headers = std.http.Headers{ .allocator = alloc };
-    defer headers.deinit();
 
-    try headers.append("accept", "*/*"); // tell the server we'll accept anything
     var req = try client.request(.GET, uri, headers, .{});
     defer req.deinit();
 
@@ -34,7 +41,7 @@ pub fn rq_get(alloc: mem.Allocator, url: []const u8) ![]const u8 {
     try req.wait();
 
     // TODO why do we need a download limit? should be optional
-    return req.reader().readAllAlloc(alloc, PLUGIN_DL_LIMIT) catch unreachable;
+    return req.reader().readAllAlloc(ally, PLUGIN_DL_LIMIT) catch unreachable;
 }
 
 pub const SizeRange = struct {

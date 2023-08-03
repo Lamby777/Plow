@@ -6,7 +6,7 @@
 const std = @import("std");
 const util = @import("util.zig");
 const defs = @import("defs.zig");
-const rq_get = util.rq_get;
+const httpGet = util.httpGet;
 const heap = std.heap;
 const mem = std.mem;
 const log = std.log;
@@ -55,7 +55,7 @@ fn install(ally: mem.Allocator, target: []const u8) !void {
     const url = util.resolveTarget(target);
 
     log.info("Getting package...", .{});
-    const res = try rq_get(ally, url);
+    const res = try httpGet(ally, url);
     defer ally.free(res);
     log.info("Installing package...", .{});
 }
