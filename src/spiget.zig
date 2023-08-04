@@ -21,6 +21,7 @@ pub fn downloadPackage(ally: std.mem.Allocator, package: *const PackageInfo) ![]
 
     // format package info into url
     const url = try std.fmt.allocPrint(ally, api_endpoints.download, .{package.name});
+    defer ally.free(url);
 
     return httpGetH(ally, url, headers);
 }
