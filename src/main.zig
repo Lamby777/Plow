@@ -15,12 +15,7 @@ const fmt = std.fmt;
 
 pub fn main() !void {
     var gpa = heap.GeneralPurposeAllocator(.{}){};
-    defer {
-        const st = gpa.deinit();
-        if (st == .leak) {
-            std.debug.print("leaked (bruh)", .{});
-        }
-    }
+    defer _ = gpa.deinit();
 
     const ally = gpa.allocator();
 
@@ -61,12 +56,10 @@ fn install(ally: mem.Allocator, target: []const u8) !void {
 
     log.info("Getting package...", .{});
 
-    var pkg = defs.PackageInfo{
+    const res = try spiget.downloadPackage(ally, &.{
         .name = target,
         .version = "deez nuts",
-    };
-
-    const res = try spiget.downloadPackage(ally, &pkg);
+    });
 
     defer ally.free(res);
     log.info("Installing package...", .{});
