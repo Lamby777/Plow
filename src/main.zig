@@ -6,6 +6,7 @@
 const std = @import("std");
 const util = @import("util.zig");
 const defs = @import("defs.zig");
+const spiget = @import("spiget.zig");
 const httpGet = util.httpGet;
 const heap = std.heap;
 const mem = std.mem;
@@ -52,10 +53,21 @@ pub fn main() !void {
 
 fn install(ally: mem.Allocator, target: []const u8) !void {
     log.info("Resolving target `{s}`...", .{target});
+
+    // TODO make this return a struct that tells us
+    // where to download the package from
     const url = util.resolveTarget(target);
+    _ = url;
 
     log.info("Getting package...", .{});
-    const res = try httpGet(ally, url);
+
+    var pkg = defs.PackageInfo{
+        .name = target,
+        .version = "deez nuts",
+    };
+
+    const res = try spiget.downloadPackage(ally, &pkg);
+
     defer ally.free(res);
     log.info("Installing package...", .{});
 }
