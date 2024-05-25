@@ -12,12 +12,7 @@ const api_endpoints = .{
 };
 
 pub fn downloadPackage(ally: std.mem.Allocator, package: *const PackageInfo) ![]const u8 {
-    // Create a Headers object that sets the user agent
-    var headers = std.http.Headers{ .allocator = ally };
-    defer headers.deinit();
-
-    try headers.append("accept", "*/*");
-    try headers.append("user-agent", "Sussy Gussy");
+    const headers = .{ .accept = "*/*", .@"user-agent" = "Sussy Gussy" };
 
     // format package info into url
     const url = try std.fmt.allocPrint(ally, api_endpoints.download, .{package.name});

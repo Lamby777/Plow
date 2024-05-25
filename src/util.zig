@@ -11,16 +11,13 @@ pub fn resolveTarget(target: []const u8) []const u8 {
 
 // get with default headers
 pub fn httpGet(ally: mem.Allocator, url: []const u8) ![]const u8 {
-    var headers = std.http.Headers{ .allocator = ally };
-    defer headers.deinit();
-
-    try headers.append("accept", "*/*"); // tell the server we'll accept anything
-
-    return httpGetH(ally, url, headers);
+    return httpGetH(ally, url, .{
+        .accept = "*/*", // tell the server we'll accept anything
+    });
 }
 
 // https://zig.news/nameless/coming-soon-to-a-zig-near-you-http-client-5b81
-pub fn httpGetH(ally: mem.Allocator, url: []const u8, headers: std.http.Headers) ![]const u8 {
+pub fn httpGetH(ally: mem.Allocator, url: []const u8, headers: anytype) ![]const u8 {
     var client = std.http.Client{
         .allocator = ally,
     };
@@ -79,7 +76,7 @@ pub fn assertArgLen(len: usize, comptime range: SizeRange) void {
     const expectedRange = range.fmtRange();
     const complaint = if (over) "Too many" else "Not enough";
     std.debug.print("{s} arguments ({}) given! Expected {s}\n\n", .{ complaint, len, expectedRange });
-    std.os.exit(2);
+    std.posix.exit(2);
 }
 
 pub fn showHelp() void {
