@@ -11,7 +11,7 @@ pub fn resolveTarget(target: []const u8) []const u8 {
 
 // https://zig.news/nameless/coming-soon-to-a-zig-near-you-http-client-5b81
 pub fn httpGet(ally: mem.Allocator, url: []const u8) ![]const u8 {
-    const client = std.http.Client{
+    var client = std.http.Client{
         .allocator = ally,
     };
     defer client.deinit();
@@ -28,8 +28,14 @@ pub fn httpGet(ally: mem.Allocator, url: []const u8) ![]const u8 {
         },
     });
 
+    if (res.status != .ok) {
+        std.log.info("bruh moment {}", .{res.status});
+    }
+
     // TODO why do we need a download limit? should be optional
     // return req.reader().readAllAlloc(ally, PLUGIN_DL_LIMIT) catch unreachable;
+
+    return &[_]u8{ 0, 0 };
 }
 
 pub const SizeRange = struct {
