@@ -9,36 +9,27 @@ pub fn resolveTarget(target: []const u8) []const u8 {
     return target;
 }
 
-// get with default headers
-pub fn httpGet(ally: mem.Allocator, url: []const u8) ![]const u8 {
-    return httpGetH(ally, url, .{
-        .accept = "*/*", // tell the server we'll accept anything
-    });
-}
-
 // https://zig.news/nameless/coming-soon-to-a-zig-near-you-http-client-5b81
-pub fn httpGetH(ally: mem.Allocator, url: []const u8, headers: anytype) ![]const u8 {
-    var client = std.http.Client{
+pub fn httpGet(ally: mem.Allocator, url: []const u8) ![]const u8 {
+    const client = std.http.Client{
         .allocator = ally,
     };
     defer client.deinit();
 
-    const uri = std.Uri.parse(url) catch unreachable;
+    const res = try client.fetch(.{
+        .location = .{ .url = url },
 
-    var req = try client.request(.GET, uri, headers, .{});
-    defer req.deinit();
+        .headers = .{
+            // tell the server we'll accept anything
+            .accept_encoding = .{ .override = "*/*" },
 
-    // req.transfer_encoding = .chunked;
-    try req.start();
-
-    // try req.writer().writeAll("Hello, World!\n");
-    // try req.finish();
-
-    // wait for the server to send use a response
-    try req.wait();
+            .host = .{ .override = url },
+            .user_agent = .{ .override = "sussy gussy" },
+        },
+    });
 
     // TODO why do we need a download limit? should be optional
-    return req.reader().readAllAlloc(ally, PLUGIN_DL_LIMIT) catch unreachable;
+    // return req.reader().readAllAlloc(ally, PLUGIN_DL_LIMIT) catch unreachable;
 }
 
 pub const SizeRange = struct {
