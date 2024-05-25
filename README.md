@@ -1,4 +1,4 @@
-# Plow
+Plow
 
 Gimme my `Pl`ugins, n`ow`!
 
@@ -9,9 +9,7 @@ plugin.
 
 ## Contributions
 
-I like to learn new languages by writing tools I actually use... In somewhat
-less sugar-coated words, I'm completely new to Zig and my code is probably
-garbage. If you still feel like contributing, well, thanks. :)
+The code is probably trash. If you're willing to put up with it, go ahead. <3
 
 ## Usage
 
