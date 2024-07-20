@@ -5,3 +5,7 @@ edition = "2021"
 
 [[bin]]
 name = "plow"
+
+[dependencies]
+spiget = "0.1.0"
+tokio = "1.38.1"

@@ -2,7 +2,8 @@
 //! PLugins nOW! A simple plugin manager
 //!
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = std::env::args().collect::<Vec<String>>();
     let Some(subcommand) = args.get(1) else {
         show_usage(true);
